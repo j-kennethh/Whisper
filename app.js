@@ -1,6 +1,8 @@
 const express = require("express");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
+require('dotenv').config()
 
 const app = express();
 
@@ -14,6 +16,8 @@ const userSchema = new mongoose.Schema({
     email: String,
     password: String
 });
+
+userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ["password"]});
 
 const User = mongoose.model("User", userSchema);  
 
@@ -53,8 +57,7 @@ app.post("/register", (req, res) => {
         password: req.body.password
     });
 
-    newUser.save().then((status) => {
-        console.log(status);
+    newUser.save().then(() => {
         res.render("secrets");
     });
 });
